@@ -3,7 +3,7 @@ const app = express();
 const { Sequelize } = require('sequelize');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
-
+const router = require('./src/routers/router');
 
 require('./src/config/passport');
 require('dotenv').config();
@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 //Connect to database
-const db = require('./src/models/model');
+const db = require('./src/config/database');
 
 db.authenticate()
   .then(() => app.listen(3000))
@@ -38,6 +38,4 @@ app.use(session({
 
 sessionStore.sync();
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+app.use(router);
