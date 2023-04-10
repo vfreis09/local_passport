@@ -12,19 +12,22 @@ require('dotenv').config();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
+
 //Connect to database
 const db = require('./src/config/database');
+const passport = require('passport');
 
 db.authenticate()
   .then(() => app.listen(3000))
   .catch(err => console.log(`Error: ${err}`));
 
-//Something idk
+//Setting session store
 const sessionStore = new SequelizeStore({
   db: db,
   tableName : 'sessions'
 });
 
+//Setting express session
 app.use(session({
   secret: process.env.SECRET,
   resave: false,
@@ -38,4 +41,9 @@ app.use(session({
 
 sessionStore.sync();
 
+//Setting passport.js and express session
+app.use(passport.initialize());
+app.use(passport.session());
+
+//Setting express router
 app.use(router);
