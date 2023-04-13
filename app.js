@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const { Sequelize } = require('sequelize');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const router = require('./src/routers/router');
@@ -38,8 +37,6 @@ app.use(session({
     }
   })
 );
-
-sessionStore.sync();
 
 //Setting passport.js and express session
 app.use(passport.initialize());

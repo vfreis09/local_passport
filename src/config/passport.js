@@ -1,7 +1,7 @@
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
-const model = require('../models/model');
-const validPassword = require('../middleware/middleware');
+const User = require('../models/model');
+const bcrypt = require('bcrypt');
 
 const customFields = {
   usernameField: 'uname',
@@ -9,14 +9,14 @@ const customFields = {
 };
 
 const verifyCallback = (username, password, done) => {
-  model.User.findOne({ where: { username: username } })
-  .then((user) => {
+  User.findOne({ where: { username: username } })
+  .then(async (user) => {
     if(!user) {
       return done(null, false)
     }
     
-    const isValid = validPassword(username, password);
- 
+    const isValid = await bcrypt.compare(password, user.password);
+    
     if(isValid) {
       return done(null, user);
     } else {
@@ -24,8 +24,8 @@ const verifyCallback = (username, password, done) => {
     }
   })
   .catch((err) => {
-    done(err);
-  });
+    console.log(err);
+  })
 };
 
 const strategy = new localStrategy(customFields, verifyCallback);
@@ -33,15 +33,15 @@ const strategy = new localStrategy(customFields, verifyCallback);
 passport.use(strategy);
 
 passport.serializeUser((user, done) => {
-  done(null, user);
+  done(null, user.id);
 });
 
-passport.deserializeUser((userId, done) => {
-  model.User.findByPk(userId)
+passport.deserializeUser((id, done) => {
+  User.findByPk(id)
   .then((user) => {
     done(null, user)
   })
   .catch((err) => {
-    done(err);
+    console.log(err);
   });
 });

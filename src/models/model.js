@@ -1,5 +1,4 @@
 const { Sequelize } = require('sequelize');
-const session = require('express-session');
 const bcrypt = require('bcrypt');
 
 require('dotenv').config();

@@ -1,7 +1,10 @@
-const bcrypt = require('bcrypt');
-
-const validPassword = (pw, password) => {
-  return bcrypt.compare(pw, password);
+const isAuth = (req, res, next) => {
+  if(req.isAuthenticated()) {
+    next();
+  } else {
+    res.status(401)
+    .send('You are not authorized to view this resource');
+  }
 };
 
-module.exports = validPassword;
+module.exports = isAuth;
